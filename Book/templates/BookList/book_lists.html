@@ -1,0 +1,36 @@
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block content %}
+    {{ block.super }}
+<script>
+    new Vue({
+        el: '#result_list',
+        data: {
+            fullscreenLoading: false
+        },
+        methods: {
+            update_chapter(url,id){
+                this.fullscreenLoading = true;
+                axios.post('{% url "Book:update_chapter" %}',{'url':url,'id':id,'csrfmiddlewaretoken':$('[name="csrfmiddlewaretoken"]').val()},{headers: {"X-CSRFToken": $('[name="csrfmiddlewaretoken"]').val()}}).then(res=>{
+                    this.fullscreenLoading = false;
+                    if(res.data.results){
+                        this.$message({
+                          message: '更新成功！',
+                          type: 'success'
+                        });
+                        setTimeout(function () {
+                            window.location.reload()
+                        },2000);
+                    }else{
+                        this.$message({
+                          message: '暂无可更新章节！',
+                          type: 'warning'
+                        });
+                    }
+                })
+            }
+        }
+    });
+</script>
+{% endblock %}
